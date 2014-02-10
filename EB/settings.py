@@ -93,7 +93,24 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
-PROJECT_TEMPLATE_DIR = "/home/mauricio/www/django/django-crud-example" # /home/mauricio/www/django/EasyBoard-Client
-CUSTOMERS_DIR = "/home/mauricio/www/django/tests/Customers"
+##################### EasyBoard vars ########################
+CORE_NUM_USERS = 1000
+try:
+    from .local_settings import CORE_DIR
+except:
+    CORE_DIR = "/home/daiech/www/django/EasyBoard/EasyBoardDEL"
+try:
+    from .local_settings import CORE_STATIC_DIR
+except:
+    CORE_STATIC_DIR = "%s/public/static" % CORE_DIR
+try:
+    from .local_settings import CUSTOMERS_DIR
+except:
+    CUSTOMERS_DIR = "/home/daiech/www/django/EasyBoard/Customers"
+try:
+    from .local_settings import PROJECT_TEMPLATE_DIR
+except:
+    PROJECT_TEMPLATE_DIR = os.sep.join([BASE_DIR, 'templates/project_template'])
+
 NGINX_CONFIG='/etc/nginx/sites-available'
 NGINX_SITES_ENABLED='/etc/nginx/sites-enabled'

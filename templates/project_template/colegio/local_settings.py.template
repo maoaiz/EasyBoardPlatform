@@ -1,0 +1,13 @@
+DEBUG = True
+DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.{{ db_engine }}',
+            'NAME': '{{ db_name }}',
+            'USER': '{{ db_user }}',
+            'PASSWORD': '{{ db_pass }}',
+            'HOST': '{{ db_host }}',
+            'PORT': '{{ db_port }}',
+        }
+    }
+EMAIL_HOST_USER = "{{ email_host_user }}"        # Correo gmail
+EMAIL_HOST_PASSWORD = "{{ email_host_password }}"    # Ojo! usar contrasena de aplicacion: http://goo.gl/e62353

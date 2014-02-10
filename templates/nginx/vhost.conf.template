@@ -13,7 +13,7 @@ server {
  
     # Ruta de la carpeta static
     location /static {
-        alias /home/mauricio/www/django/tests/EB/static;
+        alias {{ static_url }};
     }
  
     # Configuración de las peticiones que no son resueltas con las
