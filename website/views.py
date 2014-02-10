@@ -7,6 +7,7 @@ from .utils import *
 class HomeView(View):
 
 	def get(self, request):
+		# sync_database(settings.CUSTOMERS_DIR + "/colegio")
 		msj = "Esta es la plataforma!!!"
 		return render(request, "base.html", locals())
 

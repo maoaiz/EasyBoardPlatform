@@ -2,7 +2,9 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.conf import settings
 import distutils.core
-
+import os
+import sys
+import pprint
 
 def copy_tree(from_dir, to_dir):
     return distutils.dir_util.copy_tree(from_dir, to_dir)
@@ -10,9 +12,21 @@ def copy_tree(from_dir, to_dir):
 
 def sync_database(project_dir):
     from django.core.management import call_command
-    print "syncdb"
-    print call_command('syncdb', interactive=False)
-    print "/syncdb"
+    print "==========================syncdb====================================="
+    print os.getcwd()
+    print os.chdir(project_dir)
+    print os.getcwd()
+    # pprint.pprint(sys.path)
+    sys.path.insert(0, project_dir)
+    # print "NEW PATH========================="
+    # pprint.pprint(sys.path)
+    from subprocess import call
+    # print call(["ls"])
+    # print call(["cat", "manage.py"])
+    print call(["django-admin.py", "syncdb", "--noinput", "--settings=django_crud_example.settings"])
+    # print call(["python", project_dir + "/manage.py", "syncdb", "--noinput"])
+    # print call_command('syncdb', interactive=False)
+    print "==========================/syncdb===================================="
 
 
 def create_new_project(name):
