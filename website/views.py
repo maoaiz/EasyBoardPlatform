@@ -7,16 +7,19 @@ from .utils import *
 class HomeView(View):
 
 	def get(self, request):
-		# sync_database(settings.CUSTOMERS_DIR + "/rolo")
+		# sync_database(settings.CUSTOMERS_DIR + "/lina")
 		msj = "Esta es la plataforma!!!"
 		return render(request, "base.html", locals())
 
 	def post(self, request):
 		PROJECT_NAME = request.POST.get("name")
 		if PROJECT_NAME:
-			created, errors = create_new_project(PROJECT_NAME)
+			created, errors = create_new_project(PROJECT_NAME, num_users=500, email="usuario@gmail.com") # Ojo! usar Sellery Django
 			if created:
-				msj = "Nuevo proyecto creado con exito"
+				project_url = created['url']
+				username = created['user']
+				password = created['password']
+				msj = "Nuevo proyecto '%s' creado con exito." % PROJECT_NAME
 			else:
 				msj = "No se creo el proyecto"
 				print errors

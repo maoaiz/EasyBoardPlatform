@@ -97,20 +97,43 @@ TEMPLATE_DIRS = (
 CORE_NUM_USERS = 1000
 try:
     from .local_settings import CORE_DIR
-except:
+except ImportError:
     CORE_DIR = "/home/daiech/www/django/EasyBoard/EasyBoardDEL"
 try:
     from .local_settings import CORE_STATIC_DIR
-except:
+except ImportError:
     CORE_STATIC_DIR = "%s/public/static" % CORE_DIR
 try:
     from .local_settings import CUSTOMERS_DIR
-except:
+except ImportError:
     CUSTOMERS_DIR = "/home/daiech/www/django/EasyBoard/Customers"
 try:
     from .local_settings import PROJECT_TEMPLATE_DIR
-except:
+except ImportError:
     PROJECT_TEMPLATE_DIR = os.sep.join([BASE_DIR, 'templates/project_template'])
 
 NGINX_CONFIG='/etc/nginx/sites-available'
 NGINX_SITES_ENABLED='/etc/nginx/sites-enabled'
+
+
+#var to put in the new projects
+try:
+    from .local_settings import ADMIN_USERNAME
+except ImportError:
+    ADMIN_USERNAME = "del"
+    
+try:
+    from .local_settings import ADMIN_PASSWORD
+except ImportError:
+    ADMIN_PASSWORD = "123456"
+    
+try:
+    from .local_settings import ADMIN_EMAIL
+except ImportError:
+    ADMIN_EMAIL = "soporte@del.com.co"
+    
+try:
+    from .local_settings import ADMIN_EMAIL_PASS
+except ImportError:
+    ADMIN_EMAIL_PASS = ""
+    

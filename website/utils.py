@@ -1,42 +1,18 @@
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
+from django.utils.crypto import get_random_string
 import distutils.core
+from subprocess import call
 import os
+from os.path import normpath, basename
 import sys
 import pprint
-from os.path import normpath, basename
-from django.utils.crypto import get_random_string
 
 
 def copy_tree(from_dir, to_dir):
     return distutils.dir_util.copy_tree(from_dir, to_dir)
-
-
-def create_settings_file(project_dir):
-    core_dir = settings.CORE_DIR
-    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-    secret_key = get_random_string(50, chars)  # it should be calculate
-    settings_file = render_to_string("project_template/colegio/settings.py.template", locals())
-    return create_file(project_dir + "/colegio/settings.py", settings_file)
-
-
-def create_local_settings_file(project_dir):
-    db_engine = "sqlite3" # "postgresql_psycopg2"
-    db_name = basename(normpath(project_dir))
-    db_user = ""
-    db_pass = ""
-    db_host = ""
-    db_port = ""
-    email_host_user = ""
-    email_host_password = ""
-    local_settings_file = render_to_string("project_template/colegio/local_settings.py.template", locals())
-    return create_file(project_dir + "/colegio/local_settings.py", local_settings_file)
-
-
-def config_project(project_dir):
-    print create_settings_file(project_dir)
-    print create_local_settings_file(project_dir)
 
 
 def create_file(folder_dir, content):    
@@ -46,15 +22,84 @@ def create_file(folder_dir, content):
     return f
 
 
-def sync_database(project_dir):
+def delete_file(file_dir):
+    if os.path.isfile(file_dir):
+        os.remove(file_dir)
+    else:    ## Show an error ##
+        print("Error: '%s' file not found" % file_dir)
+
+
+def get_json_for_new_user(platform_dir, project_name, id=1, username=settings.ADMIN_USERNAME, password=settings.ADMIN_PASSWORD, email=settings.ADMIN_EMAIL):
+    password = make_password(password)
+    json = render_to_string("fixtures/initial_data.json.template", locals())
+    f = create_file(platform_dir + "/temp/" + project_name + ".json", json)
+    return f.name
+
+
+def create_postgresdb(project_name):
+    """Crea una bd en el motor postgresql y retorna las credenciales"""
+    db_name = "prueba"
+    db_user = "root"
+    db_pass = "holamundo"
+    print "... creando base de datos"
+    return db_name, db_user, db_pass
+
+
+def create_settings_file(project_dir):
+    core_dir = settings.CORE_DIR
+    secret_key = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+    settings_file = render_to_string("project_template/colegio/settings.py.template", locals())
+    create_file(project_dir + "/colegio/settings.py", settings_file)
+    # remove template
+    delete_file(project_dir + "/colegio/settings.py.template")
+
+
+def create_local_settings_file(project_dir):
+    db_name, db_user, db_pass = create_postgresdb(basename(normpath(project_dir)))
+    db_engine = "mysql" # "sqlite3" # "postgresql_psycopg2"
+    db_host = ""
+    db_port = ""
+    email_host_user = settings.ADMIN_EMAIL
+    email_host_password = settings.ADMIN_EMAIL_PASS
+    local_settings_file = render_to_string("project_template/colegio/local_settings.py.template", locals())
+    create_file(project_dir + "/colegio/local_settings.py", local_settings_file)
+    # remove template
+    delete_file(project_dir + "/colegio/local_settings.py.template")
+
+
+def config_project(project_dir):
+    create_settings_file(project_dir)
+    create_local_settings_file(project_dir)
+
+
+def sync_database(project_dir, email=settings.ADMIN_EMAIL):
     platform_dir = os.getcwd()
     os.chdir(project_dir)
-    from subprocess import call
+
+    # Syncdb with initial fixtures (No users charged)
     call(["/bin/bash", platform_dir + "/bash/syncdb.sh", project_dir])
+
+    #### CREATE USERS ####
+    # admin DEL
+    json_file = get_json_for_new_user(platform_dir, basename(normpath(project_dir)))  # Json para hacer load data de un usuario
+    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_file])
+    delete_file(json_file)
+
+    # admin school
+    id = 2
+    username = "admin"
+    psw = get_random_string(8, 'abcdefghijklmnopqrstuvwxyz0123456789')
+    email = "s@sd.co"
+    json_file = get_json_for_new_user(platform_dir, basename(normpath(project_dir)), id=id, username=username, password=psw, email=email)
+    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_file])
+    delete_file(json_file)
+
     os.chdir(platform_dir)
+    return username, psw
+    
 
 
-def create_new_project(name, num_users=settings.CORE_NUM_USERS):
+def create_new_project(name, num_users=settings.CORE_NUM_USERS, email=settings.ADMIN_EMAIL):
     """run this project in a new port (uwsgi)"""
     name = slugify(name)
     port = "9001" # uWSGI port, it should be calculated
@@ -67,9 +112,12 @@ def create_new_project(name, num_users=settings.CORE_NUM_USERS):
     #copy the project template:
     copy_tree(settings.PROJECT_TEMPLATE_DIR, project_dir)
 
+    #config data into project
     config_project(project_dir)
 
-    sync_database(project_dir)
+    #syncronize the data base
+    user, psw = sync_database(project_dir, email=email)
+    print "\n\nLogin with: ", user, psw, "\n\n"
     
 
     #Nginx configuration
@@ -81,6 +129,10 @@ def create_new_project(name, num_users=settings.CORE_NUM_USERS):
     vhost_conf = render_to_string("nginx/vhost.conf.template", locals())
     print vhost_conf
 
+    url = "localhost:9000"
+
     # create_file(settings.NGINX_CONFIG, vhost_conf)
-    
-    return True, False
+    if user and psw:
+        return {"user": user, "password": psw, "url": url}, False
+    else:
+        return False, "No se pudo crear el colegio, contacte con el adminitrador"

@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 	{{ msj }}
-	<pre>{{ project_dir }}</pre>
+	<h3>Datos:</h3>
+	<p>
+		Direcci&oacute;n: <a href="{{ project_url }}" target="_blank">{{ project_url }}</a>
+	</p>
+	<p>Datos:
+		<ol>
+			<li>username: {{ username }}</li>
+			<li>password: {{ password }}</li>
+		</ol>
+	</p>
 	<hr>
 	<a href="/">Volver</a>
 {% endblock %}

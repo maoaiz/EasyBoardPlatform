@@ -2,3 +2,9 @@ CORE_DIR = ""
 CORE_STATIC_DIR
 PROJECT_TEMPLATE_DIR = ""
 CUSTOMERS_DIR = ""
+
+#var to set in the new projects
+ADMIN_USERNAME = "del"
+ADMIN_PASSWORD = "DelServer"
+ADMIN_EMAIL = "soporte@del.com.co"
+ADMIN_EMAIL_PASS = ""  # Ojo! usar contrasena de aplicacion: http://goo.gl/e62353

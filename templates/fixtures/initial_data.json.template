@@ -1,0 +1,31 @@
+[
+	{
+		"pk":{{ id }},
+		"model":"auth.user",
+		"fields":{
+			"username": "{{ username }}",
+			"email":"{{ email }}",
+			"password" : "{{ password }}"
+		}
+	},
+	{
+		"pk":{{ id }},
+		"model":"account.userprofile",
+		"fields":{
+			"date_modified":"2013-11-14T03:58:43Z",
+			"date_born":null,
+			"phone2":"000",
+			"gender":null,
+			"dni_type":2,
+			"phone1":"000",
+			"dni":"000",
+			"user_type":1,
+			"is_active":true,
+			"user": {{ id }},
+			"address":"",
+			"date_added":"2013-11-14T03:58:43Z",
+			"blood_type":null,
+			"image_path": "users/user-default.jpg"
+		}
+	}
+]
