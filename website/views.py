@@ -14,7 +14,7 @@ class HomeView(View):
 	def post(self, request):
 		PROJECT_NAME = request.POST.get("name")
 		if PROJECT_NAME:
-			created, errors = create_new_project(PROJECT_NAME, num_users=500, email="usuario@gmail.com") # Ojo! usar Sellery Django
+			created, errors = create_new_project(PROJECT_NAME, num_users=750, email="usuario@gmail.com") # Ojo! usar Sellery Django
 			if created:
 				project_url = created['url']
 				username = created['user']

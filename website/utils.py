@@ -45,7 +45,7 @@ def create_postgresdb(project_name):
     return db_name, db_user, db_pass
 
 
-def create_settings_file(project_dir):
+def create_settings_file(project_dir, num_users=settings.CORE_NUM_USERS):
     core_dir = settings.CORE_DIR
     secret_key = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
     settings_file = render_to_string("project_template/colegio/settings.py.template", locals())
@@ -67,8 +67,8 @@ def create_local_settings_file(project_dir):
     delete_file(project_dir + "/colegio/local_settings.py.template")
 
 
-def config_project(project_dir):
-    create_settings_file(project_dir)
+def config_project(project_dir, num_users=settings.CORE_NUM_USERS):
+    create_settings_file(project_dir, num_users=num_users)
     create_local_settings_file(project_dir)
 
 
@@ -102,25 +102,19 @@ def sync_database(project_dir, email=settings.ADMIN_EMAIL):
 def create_new_project(name, num_users=settings.CORE_NUM_USERS, email=settings.ADMIN_EMAIL):
     """run this project in a new port (uwsgi)"""
     name = slugify(name)
-    port = "9001" # uWSGI port, it should be calculated
-
-    print "CREATING PROJECT:", name
-    print "uWSGI PORT:", port
-
     project_dir = settings.CUSTOMERS_DIR + "/" + name
 
     #copy the project template:
     copy_tree(settings.PROJECT_TEMPLATE_DIR, project_dir)
 
     #config data into project
-    config_project(project_dir)
+    config_project(project_dir, num_users=num_users)
 
     #syncronize the data base
-    user, psw = sync_database(project_dir, email=email)
-    print "\n\nLogin with: ", user, psw, "\n\n"
-    
+    user, psw = sync_database(project_dir, email=email)    
 
     #Nginx configuration
+    port = "9001" # uWSGI port, it should be calculated
     aux_port = port
     subdomain = name
     media_url = "{customers_dir}/{project_name}/public/media".format(customers_dir=settings.CUSTOMERS_DIR, project_name=name)
@@ -128,10 +122,10 @@ def create_new_project(name, num_users=settings.CORE_NUM_USERS, email=settings.A
     
     vhost_conf = render_to_string("nginx/vhost.conf.template", locals())
     print vhost_conf
+    # create_file(settings.NGINX_CONFIG, vhost_conf)
 
     url = "localhost:9000"
 
-    # create_file(settings.NGINX_CONFIG, vhost_conf)
     if user and psw:
         return {"user": user, "password": psw, "url": url}, False
     else:

@@ -89,3 +89,6 @@ MEDIA_URL = '/media/'
 NEW_STATICFILES_DIRS = []  # ej: os.sep.join([BASE_DIR, 'apps/app4/static'])
 
 STATICFILES_DIRS = STATICFILES_DIRS + tuple(NEW_STATICFILES_DIRS)
+
+
+PROJECT_NUM_USERS = {{ num_users }}
