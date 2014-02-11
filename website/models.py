@@ -8,7 +8,7 @@ class ProjectsManager(models.Manager):
     def get_last_port(self):
         obj = self.all().order_by("-port")
         if obj.count() > 0:
-            return obj[0]
+            return obj[0].port
         else:
             return None
 
