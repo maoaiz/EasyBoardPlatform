@@ -110,6 +110,14 @@ def create_bash_scripts(project_dir, port):
     create_file(project_dir + "/stop.sh", _stop)
 
 
+def get_available_port():
+    last = Projects.objects.get_last_port()
+    if last:
+        return int(last) + 1
+    else:
+        return 9000
+
+
 def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=None):
     """run this project in a new port (uwsgi)"""
     email = settings.ADMIN_EMAIL
@@ -128,7 +136,7 @@ def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=No
     user, psw = sync_database(project_dir, email=email)    
 
     #Nginx configuration
-    port = "9001" # uWSGI port, it should be calculated
+    port = get_available_port() # uWSGI port, it should be calculated
     # create scritps to run project
     create_bash_scripts(project_dir, port)
 
@@ -142,7 +150,7 @@ def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=No
     print vhost_conf
     # create_file(settings.NGINX_CONFIG, vhost_conf)
     
-    url = "localhost:9000"
+    url = "localhost:" + str(port)
 
     if user and psw:
         Projects.objects.create(user_owner=owner, project_name=project_name, project_url=subdomain, port=port, num_members=num_users)
