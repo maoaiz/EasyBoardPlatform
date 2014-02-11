@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<p>msj: {{ msj }}</p>
+<form method="POST">
+	{% csrf_token %}
+	<label>Crear proyecto:</label>
+	<input name="name" placeholder="Colegio1" autofocus {% if not user.is_authenticated %}disabled="true"{% endif %}>
+	<button type="submit">Crear colegio</button>
+</form>
+{% if user.is_authenticated %}
+	<hr>
+	<h3>Proyectos:</h3>
+	<ol>
+	{% for p in projects %}
+		<li><a href="http://{{ p.project_url }}.easyboard.co">{{ p.project_name }}</a> ({{ p.user_owner }})</li>
+	{% endfor %}
+	</ol>
+{% endif %}
+{% endblock %}

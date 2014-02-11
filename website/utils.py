@@ -3,6 +3,7 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.utils.crypto import get_random_string
+from .models import Projects
 import distutils.core
 from subprocess import call
 import os
@@ -98,10 +99,23 @@ def sync_database(project_dir, email=settings.ADMIN_EMAIL):
     return username, psw
     
 
+def create_bash_scripts(project_dir, port):
+    _reload = render_to_string("nginx/reload.sh.template", locals())
+    create_file(project_dir + "/reload.sh", _reload)
 
-def create_new_project(name, num_users=settings.CORE_NUM_USERS, email=settings.ADMIN_EMAIL):
+    _start = render_to_string("nginx/start.sh.template", locals())
+    create_file(project_dir + "/start.sh", _start)
+    
+    _stop = render_to_string("nginx/stop.sh.template", locals())
+    create_file(project_dir + "/stop.sh", _stop)
+
+
+def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=None):
     """run this project in a new port (uwsgi)"""
-    name = slugify(name)
+    email = settings.ADMIN_EMAIL
+    if owner:
+        email = owner.email
+    name = slugify(project_name)
     project_dir = settings.CUSTOMERS_DIR + "/" + name
 
     #copy the project template:
@@ -115,6 +129,10 @@ def create_new_project(name, num_users=settings.CORE_NUM_USERS, email=settings.A
 
     #Nginx configuration
     port = "9001" # uWSGI port, it should be calculated
+    # create scritps to run project
+    create_bash_scripts(project_dir, port)
+
+
     aux_port = port
     subdomain = name
     media_url = "{customers_dir}/{project_name}/public/media".format(customers_dir=settings.CUSTOMERS_DIR, project_name=name)
@@ -123,10 +141,11 @@ def create_new_project(name, num_users=settings.CORE_NUM_USERS, email=settings.A
     vhost_conf = render_to_string("nginx/vhost.conf.template", locals())
     print vhost_conf
     # create_file(settings.NGINX_CONFIG, vhost_conf)
-
+    
     url = "localhost:9000"
 
     if user and psw:
+        Projects.objects.create(user_owner=owner, project_name=project_name, project_url=subdomain, port=port, num_members=num_users)
         return {"user": user, "password": psw, "url": url}, False
     else:
         return False, "No se pudo crear el colegio, contacte con el adminitrador"

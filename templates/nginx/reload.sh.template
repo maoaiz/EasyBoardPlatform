@@ -1,0 +1,11 @@
+#!/bin/bash
+ps -Af | grep uwsgi | grep -v grep | grep {{ port }} | awk '{ print $2 }' | xargs kill
+echo Stopped...
+echo Wait...
+sleep 1
+uwsgi --socket :{{ port }} --wsgi-file colegio/wsgi.py -d logfile.log
+echo Started...
+
+
+
+

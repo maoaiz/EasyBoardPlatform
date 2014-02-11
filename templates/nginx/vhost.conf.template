@@ -1,23 +1,15 @@
 server {
-    listen      80; # puerto por el que escucha la aplicación
-    server_name {{ subdomain }}.easyboard.co {{ subdomain }}.easyboard.com.co; # nombre o ip del servidor
+    listen      80;
+    server_name {{ subdomain }}.easyboard.co {{ subdomain }}.easyboard.com.co;
     charset     utf-8;
- 
     # tamaño maximo de subida
     client_max_body_size 75M;
- 
-    # Ruta de la carpeta media
     location /media  {
         alias {{ media_url }};
     }
- 
-    # Ruta de la carpeta static
     location /static {
         alias {{ static_url }};
     }
- 
-    # Configuración de las peticiones que no son resueltas con las
-    # reglas anteriores. Estas son reenviadas al servidor django
     location / {
         uwsgi_pass 127.0.0.1:{{ aux_port }}; # 127.0.0.1:PUERTO_AUXILIAR
         include     uwsgi_params;

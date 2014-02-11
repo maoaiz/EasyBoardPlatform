@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Hola mundo</title>
+	<title>EasyBoard platform</title>
 </head>
 <body>
 	<div class="b">
 		<h1>Plataforma</h1>
+		{% if user.is_authenticated %}
+			<a href="{% url 'logout'  %}">logout</a>
+		{% else %}
+			<a href="{% url 'login'  %}">login</a>
+		{% endif %}
+		<hr>
 		{% block content %}
-			<p>msj: {{ msj }}</p>
-			<hr>
-			<form method="POST">
-				{% csrf_token %}
-				<label>Crear proyecto:</label>
-				<input name="name" placeholder="Colegio1" autofocus>
-				<button type="submit">Crear colegio</button>
-			</form>
 		{% endblock %}
 	</div>
 </body>

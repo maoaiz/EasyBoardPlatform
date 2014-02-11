@@ -93,6 +93,12 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
+
+LOGIN_URL = "/login"
+LOGOUT_URL = "/logout"
+LOGIN_REDIRECT_URL = "/"
+
+
 ##################### EasyBoard vars ########################
 CORE_NUM_USERS = 1000
 try:
@@ -136,4 +142,3 @@ try:
     from .local_settings import ADMIN_EMAIL_PASS
 except ImportError:
     ADMIN_EMAIL_PASS = ""
-    
