@@ -118,7 +118,7 @@ try:
 except ImportError:
     PROJECT_TEMPLATE_DIR = os.sep.join([BASE_DIR, 'templates/project_template'])
 
-NGINX_CONFIG='/etc/nginx/sites-available'
+NGINX_SITES_AVAILABLE='/etc/nginx/sites-available'
 NGINX_SITES_ENABLED='/etc/nginx/sites-enabled'
 
 

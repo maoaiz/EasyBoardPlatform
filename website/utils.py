@@ -123,7 +123,7 @@ def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=No
     email = settings.ADMIN_EMAIL
     if owner:
         email = owner.email
-    name = slugify(project_name)
+    name = slugify(project_name) # WARNIGN!!!! Validate project_name
     project_dir = settings.CUSTOMERS_DIR + "/" + name
 
     #copy the project template:
@@ -147,11 +147,17 @@ def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=No
     static_url = settings.CORE_STATIC_DIR
     
     vhost_conf = render_to_string("nginx/vhost.conf.template", locals())
-    print vhost_conf
-    # create_file(settings.NGINX_CONFIG, vhost_conf)
-    
-    url = "localhost:" + str(port)
+    vhost = create_file(os.getcwd() + "/temp/" + name + ".conf", vhost_conf)
 
+    vhost_dir = vhost.name
+    vhost_name = name + ".conf"
+    # sudo cp vhost.name settings.NGINX_SITES_AVAILABLE
+    # sudo ln -s /etc/nginx/sites-available/vhost_conf /etc/nginx/sites-enabled/
+    # sudo service nginx reload
+    call(["sudo", "/usr/bin/eb.sh", vhost_dir, vhost_name])
+    call(["/bin/bash", "bash/run_project.sh", project_dir, str(port)])
+
+    url = "http://" + subdomain + ".easyboard.co"
     if user and psw:
         Projects.objects.create(user_owner=owner, project_name=project_name, project_url=subdomain, port=port, num_members=num_users)
         return {"user": user, "password": psw, "url": url}, False
