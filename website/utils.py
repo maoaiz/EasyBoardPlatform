@@ -140,7 +140,6 @@ def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=No
     # create scritps to run project
     create_bash_scripts(project_dir, port)
 
-
     aux_port = port
     subdomain = name
     media_url = "{customers_dir}/{project_name}/public/media".format(customers_dir=settings.CUSTOMERS_DIR, project_name=name)
@@ -151,11 +150,12 @@ def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=No
 
     vhost_dir = vhost.name
     vhost_name = name + ".conf"
-    # sudo cp vhost.name settings.NGINX_SITES_AVAILABLE
-    # sudo ln -s /etc/nginx/sites-available/vhost_conf /etc/nginx/sites-enabled/
-    # sudo service nginx reload
-    call(["sudo", "/usr/bin/eb.sh", vhost_dir, vhost_name])
-    call(["/bin/bash", "bash/run_project.sh", project_dir, str(port)])
+
+    os.system( " ".join(["sudo", "/usr/bin/eb.sh", vhost_dir, vhost_name]) )
+    platform_dir = os.getcwd()
+    os.chdir(project_dir)
+    os.system( " ".join(["/bin/bash", platform_dir + "/bash/run_project.sh", "`pwd`", str(port)]) )
+    os.chdir(platform_dir)
 
     url = "http://" + subdomain + ".easyboard.co"
     if user and psw:

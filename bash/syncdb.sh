@@ -1,5 +1,5 @@
 #!/bin/bash
-source ~/envs/eb/bin/activate
+source /home/daiech/envs/generic/bin/activate
 echo 'Agregando PYTHONPATH:' $1
 export PYTHONPATH="$1"
 echo 'Sincronizando base de datos'

@@ -1,4 +1,8 @@
 #!/bin/bash
-source ~/envs/eb/bin/activate
+deactivate
+source /home/daiech/envs/generic/bin/activate
+echo "====== RUN_PROJECT.SH ======="
 export PYTHONPATH="$1"
-uwsgi --socket :$2 --wsgi-file colegio/wsgi.py -d logfile.log
+export DJANGO_SETTINGS_MODULE="colegio.settings"
+uwsgi --socket :$2 --wsgi-file ./colegio/wsgi.py -d logfile.log
+echo "======/RUN_PROJECT.SH ======="
