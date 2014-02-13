@@ -32,7 +32,7 @@ def delete_file(file_dir):
 
 def get_json_for_new_user(platform_dir, project_name, id=1, username=settings.ADMIN_USERNAME, password=settings.ADMIN_PASSWORD, email=settings.ADMIN_EMAIL):
     password = make_password(password)
-    json = render_to_string("fixtures/initial_data.json.template", locals())
+    json = render_to_string(platform_dir + "/templates/fixtures/initial_data.json.template", locals())
     f = create_file(platform_dir + "/temp/" + project_name + ".json", json)
     return f.name
 
@@ -81,19 +81,19 @@ def sync_database(project_dir, email=settings.ADMIN_EMAIL):
     call(["/bin/bash", platform_dir + "/bash/syncdb.sh", project_dir])
 
     #### CREATE USERS ####
-    # admin DEL
-    json_file = get_json_for_new_user(platform_dir, basename(normpath(project_dir)))  # Json para hacer load data de un usuario
-    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_file])
-    delete_file(json_file)
+    # admin DEL, id = 1
+    json_dir = get_json_for_new_user(platform_dir, basename(normpath(project_dir)))  # Json para hacer load_data de un usuario
+    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_dir])
+    delete_file(json_dir)
 
     # admin school
     id = 2
     username = "admin"
     psw = get_random_string(8, 'abcdefghijklmnopqrstuvwxyz0123456789')
-    email = "s@sd.co"
-    json_file = get_json_for_new_user(platform_dir, basename(normpath(project_dir)), id=id, username=username, password=psw, email=email)
-    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_file])
-    delete_file(json_file)
+    email = email
+    json_dir = get_json_for_new_user(platform_dir, basename(normpath(project_dir)), id=id, username=username, password=psw, email=email)
+    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_dir])
+    delete_file(json_dir)
 
     os.chdir(platform_dir)
     return username, psw
@@ -118,6 +118,35 @@ def get_available_port():
         return 9000
 
 
+def create_vhost(subdomain, aux_port):
+    media_url = "{customers_dir}/{project_name}/public/media".format(customers_dir=settings.CUSTOMERS_DIR, project_name=subdomain)
+    static_url = settings.CORE_STATIC_DIR
+    content = render_to_string("nginx/vhost.conf.template", locals())
+    f = create_file(os.getcwd() + "/temp/" + subdomain + ".conf", content)
+    return f
+
+
+def run_server(project_dir, name):
+    port = get_available_port() # uWSGI port
+    
+    # create scritps to run project
+    create_bash_scripts(project_dir, port)
+
+    vhost = create_vhost(name, port)
+    
+    vhost_dir = vhost.name
+    vhost_name = name + ".conf"
+
+    os.system( " ".join(["sudo", "/usr/bin/eb.sh", vhost_dir, vhost_name]) )  # This script config the nginx vhost
+    
+    platform_dir = os.getcwd()
+    os.chdir(project_dir)
+    os.system( " ".join(["env", "-i", "/bin/bash", platform_dir + "/bash/run_project.sh", "`pwd`", str(port)]) )
+    os.chdir(platform_dir)
+    return port
+
+
+
 def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=None):
     """run this project in a new port (uwsgi)"""
     email = settings.ADMIN_EMAIL
@@ -133,33 +162,14 @@ def create_new_project(project_name, num_users=settings.CORE_NUM_USERS, owner=No
     config_project(project_dir, num_users=num_users)
 
     #syncronize the data base
-    user, psw = sync_database(project_dir, email=email)    
+    user, psw = sync_database(project_dir, email=email)
 
     #Nginx configuration
-    port = get_available_port() # uWSGI port, it should be calculated
-    # create scritps to run project
-    create_bash_scripts(project_dir, port)
+    port = run_server(project_dir, name)
 
-    aux_port = port
-    subdomain = name
-    media_url = "{customers_dir}/{project_name}/public/media".format(customers_dir=settings.CUSTOMERS_DIR, project_name=name)
-    static_url = settings.CORE_STATIC_DIR
-    
-    vhost_conf = render_to_string("nginx/vhost.conf.template", locals())
-    vhost = create_file(os.getcwd() + "/temp/" + name + ".conf", vhost_conf)
-
-    vhost_dir = vhost.name
-    vhost_name = name + ".conf"
-
-    os.system( " ".join(["sudo", "/usr/bin/eb.sh", vhost_dir, vhost_name]) )
-    platform_dir = os.getcwd()
-    os.chdir(project_dir)
-    os.system( " ".join(["/bin/bash", platform_dir + "/bash/run_project.sh", "`pwd`", str(port)]) )
-    os.chdir(platform_dir)
-
-    url = "http://" + subdomain + ".easyboard.co"
+    url = "http://" + name + "." + settings.PRINCIPAL_DOMAIN
     if user and psw:
-        Projects.objects.create(user_owner=owner, project_name=project_name, project_url=subdomain, port=port, num_members=num_users)
+        Projects.objects.create(user_owner=owner, project_name=project_name, project_url=name, port=port, num_members=num_users)
         return {"user": user, "password": psw, "url": url}, False
     else:
         return False, "No se pudo crear el colegio, contacte con el adminitrador"

@@ -10,6 +10,9 @@ server {
     location /static {
         alias {{ static_url }};
     }
+    location /static/admin {
+        alias /home/del/entornos/eb/lib/python2.7/site-packages/django/contrib/admin/static/admin;
+    }
     location / {
         uwsgi_pass 127.0.0.1:{{ aux_port }}; # 127.0.0.1:PUERTO_AUXILIAR
         include     uwsgi_params;
