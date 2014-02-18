@@ -9,7 +9,6 @@ from subprocess import call
 import os
 from os.path import normpath, basename
 import sys
-import pprint
 
 
 def copy_tree(from_dir, to_dir):
@@ -31,9 +30,12 @@ def delete_file(file_dir):
 
 
 def get_json_for_new_user(platform_dir, project_name, id=1, username=settings.ADMIN_USERNAME, password=settings.ADMIN_PASSWORD, email=settings.ADMIN_EMAIL):
+    current_dir = os.getcwd()
+    os.chdir(platform_dir)
     password = make_password(password)
     json = render_to_string(platform_dir + "/templates/fixtures/initial_data.json.template", locals())
     f = create_file(platform_dir + "/temp/" + project_name + ".json", json)
+    os.chdir(current_dir)
     return f.name
 
 
@@ -76,7 +78,6 @@ def config_project(project_dir, num_users=settings.CORE_NUM_USERS):
 def sync_database(project_dir, email=settings.ADMIN_EMAIL):
     platform_dir = os.getcwd()
     os.chdir(project_dir)
-
     # Syncdb with initial fixtures (No users charged)
     call(["/bin/bash", platform_dir + "/bash/syncdb.sh", project_dir])
 
@@ -115,7 +116,7 @@ def get_available_port():
     if last:
         return int(last) + 1
     else:
-        return 9000
+        return settings.INITIAL_PORT
 
 
 def create_vhost(subdomain, aux_port):

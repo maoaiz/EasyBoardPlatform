@@ -101,6 +101,7 @@ LOGIN_REDIRECT_URL = "/"
 
 ##################### EasyBoard vars ########################
 CORE_NUM_USERS = 1000
+INITIAL_PORT = 9001
 try:
     from .local_settings import CORE_DIR
 except ImportError:
@@ -131,7 +132,7 @@ except ImportError:
 try:
     from .local_settings import ADMIN_PASSWORD
 except ImportError:
-    ADMIN_PASSWORD = "123456"
+    ADMIN_PASSWORD = "DelServer2014"
     
 try:
     from .local_settings import ADMIN_EMAIL
