@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+PROJECT_NAME = "EasyBoard"
 PRINCIPAL_DOMAIN = "easyboard.co"
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -36,8 +36,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'website'
+    'website',
+    'djcelery',
+    'kombu.transport.django',
 )
+
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = "django://"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -143,3 +149,18 @@ try:
     from .local_settings import ADMIN_EMAIL_PASS
 except ImportError:
     ADMIN_EMAIL_PASS = ""
+
+############# VARS TO SEND EMAILS #############
+try:
+    from .local_settings import EMAIL_HOST_USER
+except ImportError:
+    EMAIL_HOST_USER = ""
+
+try:
+    from .local_settings import EMAIL_HOST_PASSWORD
+except ImportError:
+    EMAIL_HOST_PASSWORD = ""
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

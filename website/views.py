@@ -2,14 +2,14 @@ from django.shortcuts import render
 from django.http import Http404
 from django.conf import settings
 from django.views.generic.base import View
-from .utils import *
+from django.template.defaultfilters import slugify
+from .tasks import *
 from .models import *
 
 
 class HomeView(View):
 
 	def get(self, request):
-		# sync_database(settings.CUSTOMERS_DIR + "/lina")
 		projects = Projects.objects.filter(is_active=True)
 		msj = ""
 		return render(request, "home.html", locals())
@@ -18,16 +18,9 @@ class HomeView(View):
 		if request.user.is_authenticated():  # TRATAR DE USAR loggin_required
 			PROJECT_NAME = request.POST.get("name")
 			if PROJECT_NAME:
-				created, errors = create_new_project(PROJECT_NAME, num_users=750, owner=request.user) # Ojo! usar Sellery Django
-				if created:
-					project_url = created['url']
-					username = created['user']
-					password = created['password']
-					# send email
-					msj = "Nuevo proyecto '%s' creado con exito." % PROJECT_NAME
-				else:
-					msj = "No se creo el proyecto"
-					print errors
+				create_school.delay(PROJECT_NAME, num_users=750, owner=request.user) # Ojo! usar Celery Django
+				project_url = "http://" + slugify(PROJECT_NAME) + "." + settings.PRINCIPAL_DOMAIN
+				msj = u"El proyecto '%s' se esta creando. Se le enviara un correo electronico" % PROJECT_NAME
 			else:
 				msj = "No hay nombre de proyecto"
 			return render(request, "show_new_project.html", locals())
