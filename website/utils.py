@@ -59,7 +59,7 @@ def create_settings_file(project_dir, num_users=settings.CORE_NUM_USERS):
 
 def create_local_settings_file(project_dir):
     db_name, db_user, db_pass = create_postgresdb(basename(normpath(project_dir)))
-    db_engine = "mysql" # "sqlite3" # "postgresql_psycopg2"
+    db_engine = "sqlite3" # "postgresql_psycopg2"
     db_host = ""
     db_port = ""
     email_host_user = settings.ADMIN_EMAIL
