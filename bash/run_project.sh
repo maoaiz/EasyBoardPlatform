@@ -1,5 +1,5 @@
 #!/bin/bash
-source /home/daiech/envs/generic/bin/activate
+source /home/del/entornos/generic/bin/activate
 echo "====== RUN_PROJECT.SH ======="
 echo $PATH
 export PYTHONPATH=$1:$PYTHONPATH

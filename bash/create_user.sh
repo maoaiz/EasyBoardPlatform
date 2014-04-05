@@ -1,5 +1,5 @@
 #!/bin/bash
-source /home/daiech/envs/generic/bin/activate
+source /home/del/entornos/generic/bin/activate
 # echo 'Agregando PYTHONPATH:' $1
 export PYTHONPATH="$1"
 echo 'Creando usuario'
