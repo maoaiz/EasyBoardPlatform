@@ -8,11 +8,19 @@
 
 	sudo chmod +x /usr/bin/eb.sh
 
+2.1) Quit sudo password, type:
+
+	$ sudo visudo
+
+	and put the next line in the end:
+	
+	del ALL=(ALL) NOPASSWD: /usr/bin/eb.sh
+
 3) Configure de local_settings vars.
 
 4) sync the database
 
-5) run celery in background as a daemon  or run in terminal:
+5) run celery in background as a daemon  or run in terminal: docs: http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html?highlight=shared_task
 	
 	EasyBoardPlatform$ celery -A EB worker -l info
 
