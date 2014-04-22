@@ -1,7 +1,6 @@
 #!/bin/bash
 source /home/del/entornos/generic/bin/activate
 echo "====== RUN_PROJECT.SH ======="
-echo $PATH
 export PYTHONPATH=$1:$PYTHONPATH
 # export DJANGO_SETTINGS_MODULE="colegio.settings"
 uwsgi -s :$2 --wsgi-file ./colegio/wsgi.py -d logfile.log

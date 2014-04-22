@@ -167,3 +167,16 @@ except ImportError:
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+
+################### #######################
+
+try:
+    from .local_settings import POSTGRES_DB_USER
+except ImportError:
+    POSTGRES_DB_USER = "del"
+    
+try:
+    from .local_settings import POSTGRES_DB_USER_PASS
+except ImportError:
+    POSTGRES_DB_USER_PASS = "DelServer2014"

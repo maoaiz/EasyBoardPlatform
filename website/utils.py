@@ -41,9 +41,9 @@ def get_json_for_new_user(platform_dir, project_name, id=1, username=settings.AD
 
 def create_postgresdb(project_name):
     """Crea una bd en el motor postgresql y retorna las credenciales"""
-    db_name = "prueba"
-    db_user = "root"
-    db_pass = "holamundo"
+    db_name = "db_" + project_name
+    db_user = settings.POSTGRES_DB_USER
+    db_pass = settings.POSTGRES_DB_USER_PASS
     print "... creando base de datos"
     return db_name, db_user, db_pass
 
@@ -59,7 +59,7 @@ def create_settings_file(project_dir, num_users=settings.CORE_NUM_USERS):
 
 def create_local_settings_file(project_dir):
     db_name, db_user, db_pass = create_postgresdb(basename(normpath(project_dir)))
-    db_engine = "sqlite3" # "postgresql_psycopg2"
+    db_engine = "postgresql_psycopg2"
     db_host = ""
     db_port = ""
     email_host_user = settings.ADMIN_EMAIL

@@ -23,3 +23,6 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+POSTGRES_DB_USER = ""
+POSTGRES_DB_USER_PASS = ""
