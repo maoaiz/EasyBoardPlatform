@@ -44,7 +44,31 @@ def create_postgresdb(project_name):
     db_name = "db_" + project_name
     db_user = settings.POSTGRES_DB_USER
     db_pass = settings.POSTGRES_DB_USER_PASS
-    print "... creando base de datos"
+
+    from psycopg2 import connect
+    from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+    try:
+        conn = connect(dbname='postgres', user=db_user, host='localhost', password=db_pass)
+    except:
+        print "I am unable to connect to the database"
+
+    try:
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cur = conn.cursor()
+        cur.execute('CREATE DATABASE ' + db_name)
+    except Exception, e:
+        print e
+
+    try:
+        cur.execute('GRANT ALL PRIVILEGES ON DATABASE {db} TO {user};'.format(db=db_name, user=db_user))
+    except Exception, e:
+        print e
+
+    try:
+        cur.close()
+        conn.close()
+    except Exception, e:
+        print e
     return db_name, db_user, db_pass
 
 
