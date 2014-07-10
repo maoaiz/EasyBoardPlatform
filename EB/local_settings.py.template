@@ -26,3 +26,5 @@ DATABASES = {
 
 POSTGRES_DB_USER = ""
 POSTGRES_DB_USER_PASS = ""
+
+ENV_DIR = "/home/daiech/envs/eb/bin/activate"

@@ -1,5 +1,5 @@
 #!/bin/bash
-source /home/del/entornos/generic/bin/activate
+source $3
 # echo 'Agregando PYTHONPATH:' $1
 export PYTHONPATH="$1"
 echo 'Creando usuario'

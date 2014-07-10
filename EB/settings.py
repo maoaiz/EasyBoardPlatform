@@ -180,3 +180,8 @@ try:
     from .local_settings import POSTGRES_DB_USER_PASS
 except ImportError:
     POSTGRES_DB_USER_PASS = "DelServer2014"
+
+try:
+    from .local_settings import ENV_DIR
+except ImportError:
+    ENV_DIR = "/home/del/entornos/generic/bin/activate"
