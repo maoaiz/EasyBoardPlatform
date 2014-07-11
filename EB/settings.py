@@ -184,4 +184,4 @@ except ImportError:
 try:
     from .local_settings import ENV_DIR
 except ImportError:
-    ENV_DIR = "/home/del/entornos/generic/bin/activate"
+    ENV_DIR = "/home/del/entornos/ebplatform/bin/activate"
