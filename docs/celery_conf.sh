@@ -11,7 +11,7 @@ CELERYD_NODES="worker"
 # Absolute or relative path to the 'celery' command:
 ###CELERY_BIN="/usr/local/bin/celery"
 # CELERY_BIN="/home/daiech/envs/eb/bin/celery"
-CELERY_BIN="/home/del/entornos/generic/bin/celery"
+CELERY_BIN="/home/del/entornos/ebplatform/bin/celery"
 
 # App instance to use
 # comment out this line if you don't use an app
