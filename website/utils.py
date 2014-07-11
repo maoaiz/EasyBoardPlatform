@@ -127,6 +127,10 @@ def sync_database(project_dir, email=settings.ADMIN_EMAIL):
 def create_bash_scripts(project_dir, port):
     _reload = render_to_string("nginx/reload.sh.template", locals())
     create_file(project_dir + "/reload.sh", _reload)
+    try:
+        project_name = project_dir.split("/")[-1]
+    except Exception:
+        project_name = ""
 
     _start = render_to_string("nginx/start.sh.template", locals())
     create_file(project_dir + "/start.sh", _start)
