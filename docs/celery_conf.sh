@@ -1,5 +1,5 @@
 #Copy this content in /etc/default/celeryd
-
+#/etc/init.d/celeryd {start|stop|restart|graceful|kill|dryrun|create-paths}
 
 # Names of nodes to start
 #   most will only start one node:
