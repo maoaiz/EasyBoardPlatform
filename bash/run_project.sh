@@ -1,5 +1,5 @@
 #!/bin/bash
-source /home/del/entornos/generic/bin/activate
+source $3
 echo "====== RUN_PROJECT.SH ======="
 export PYTHONPATH=$1:$PYTHONPATH
 # export DJANGO_SETTINGS_MODULE="colegio.settings"

@@ -1,4 +1,4 @@
 #!/bin/bash
-uwsgi --socket :{{ port }} --wsgi-file colegio/wsgi.py -d logfile.log
+uwsgi --socket :{{ port }} --wsgi-file colegio/wsgi.py -d logfile-{{ project_name }}.log
 
 

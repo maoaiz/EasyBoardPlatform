@@ -103,12 +103,12 @@ def sync_database(project_dir, email=settings.ADMIN_EMAIL):
     platform_dir = os.getcwd()
     os.chdir(project_dir)
     # Syncdb with initial fixtures (No users charged)
-    call(["/bin/bash", platform_dir + "/bash/syncdb.sh", project_dir])
+    call(["/bin/bash", platform_dir + "/bash/syncdb.sh", project_dir, settings.ENV_DIR])
 
     #### CREATE USERS ####
     # admin DEL, id = 1
     json_dir = get_json_for_new_user(platform_dir, basename(normpath(project_dir)))  # Json para hacer load_data de un usuario
-    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_dir])
+    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_dir, settings.ENV_DIR])
     delete_file(json_dir)
 
     # admin school
@@ -117,7 +117,7 @@ def sync_database(project_dir, email=settings.ADMIN_EMAIL):
     psw = get_random_string(8, 'abcdefghijklmnopqrstuvwxyz0123456789')
     email = email
     json_dir = get_json_for_new_user(platform_dir, basename(normpath(project_dir)), id=id, username=username, password=psw, email=email)
-    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_dir])
+    call(["/bin/bash", platform_dir + "/bash/create_user.sh", project_dir, json_dir, settings.ENV_DIR])
     delete_file(json_dir)
 
     os.chdir(platform_dir)
@@ -127,6 +127,10 @@ def sync_database(project_dir, email=settings.ADMIN_EMAIL):
 def create_bash_scripts(project_dir, port):
     _reload = render_to_string("nginx/reload.sh.template", locals())
     create_file(project_dir + "/reload.sh", _reload)
+    try:
+        project_name = project_dir.split("/")[-1]
+    except Exception:
+        project_name = ""
 
     _start = render_to_string("nginx/start.sh.template", locals())
     create_file(project_dir + "/start.sh", _start)
@@ -166,7 +170,7 @@ def run_server(project_dir, name):
     
     platform_dir = os.getcwd()
     os.chdir(project_dir)
-    os.system( " ".join(["env", "-i", "/bin/bash", platform_dir + "/bash/run_project.sh", "`pwd`", str(port)]) )
+    os.system( " ".join(["env", "-i", "/bin/bash", platform_dir + "/bash/run_project.sh", "`pwd`", str(port), settings.ENV_DIR]) )
     os.chdir(platform_dir)
     return port
 

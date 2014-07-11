@@ -1,5 +1,5 @@
 #!/bin/bash
-source /home/del/entornos/generic/bin/activate
+source $2
 # echo 'Agregando PYTHONPATH:' $1
 export PYTHONPATH="$1"
 echo 'Sincronizando base de datos'
