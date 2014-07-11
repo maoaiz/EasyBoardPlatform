@@ -51,16 +51,19 @@ def sendEmail(email_type, ctx, to=None):
 
     try:
         smtp = settings.EMAIL_HOST_PASSWORD and settings.EMAIL_HOST_USER
-    except NameError:
+    except:
         smtp = None
     if smtp:
-        return sendGmailEmail(to, subject, html_content)
+        try:
+            resp = sendGmailEmail(to, subject, html_content)
+        except Exception, e:
+            resp = "[WARNING] %s" % (e)
+        return resp
     else:
         msg = EmailMultiAlternatives(subject, text_content, from_email, to)
         msg.attach_alternative(html_content, "text/html")
         try:
             msg.send()
-            print "EMAIL enviado!"
             return "EMAIL enviado!"
         except Exception, e:
             print e
@@ -69,12 +72,14 @@ def sendEmail(email_type, ctx, to=None):
 
 
 def sendGmailEmail(to, subject, text, attach=False):
+    print "Sending email about new school...",
     gmail_user = settings.EMAIL_HOST_USER
     gmail_pwd = settings.EMAIL_HOST_PASSWORD
     msg = MIMEMultipart()
 
     msg['From'] = gmail_user
     msg['To'] = ",".join(to)
+
     # msg['Subject'] = subject
     msg['Subject'] = "%s" % Header(subject, 'utf-8')
 

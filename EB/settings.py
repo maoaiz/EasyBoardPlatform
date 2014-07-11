@@ -44,6 +44,9 @@ INSTALLED_APPS = (
 import djcelery
 djcelery.setup_loader()
 BROKER_URL = "django://"
+EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+CELERY_EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

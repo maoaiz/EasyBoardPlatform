@@ -13,15 +13,16 @@ def create_school(project_name, num_users=settings.CORE_NUM_USERS, owner=None):
     created, error = create_new_project(project_name, num_users=num_users, owner=owner)
     if created:
         full_name = _("Usuario")
+        email = settings.ADMIN_EMAIL
         if owner:
             full_name = owner.get_full_name()
+            email = owner.email if owner.email != "" else email
         ctx = {
             "full_name": full_name,
             "school_url": created['url'],
             "username": created['user'],
             "password": created['password'],
         }
-        is_sent = sendEmail("#SEND_CREDENTIALS", ctx, to=[owner.email])
-        print is_sent
+        is_sent = sendEmail("#SEND_CREDENTIALS", ctx, to=[email])
     print "======================= PROYECTO CREADO ========================"
 	
