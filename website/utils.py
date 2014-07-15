@@ -41,7 +41,7 @@ def get_json_for_new_user(platform_dir, project_name, id=1, username=settings.AD
 
 def create_postgresdb(project_name):
     """Crea una bd en el motor postgresql y retorna las credenciales"""
-    db_name = "db_" + project_name
+    db_name = "eb_" + project_name
     db_user = settings.POSTGRES_DB_USER
     db_pass = settings.POSTGRES_DB_USER_PASS
 
